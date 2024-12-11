@@ -1,8 +1,8 @@
 <?php
 
-
 use App\Models\Contact;
 use App\Models\User;
+
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\delete;
 use function Pest\Laravel\get;
@@ -34,7 +34,7 @@ test('validate contact phone digits', function (string $contact, bool $valid) {
     $response = post('/contact', [
         'name' => fake()->name,
         'contact' => $contact,
-        'email' => fake()->email
+        'email' => fake()->email,
     ]);
     if ($valid) {
         $response->assertSessionDoesntHaveErrors(['contact']);
@@ -53,7 +53,7 @@ test('only create contact if phone is unique', function () {
     $response = post('/contact', [
         'name' => fake()->name,
         'contact' => $contact->contact,
-        'email' => fake()->email
+        'email' => fake()->email,
     ]);
     $response->assertSessionHasErrors(['contact']);
 });
@@ -64,7 +64,7 @@ test('only create contact if email is unique', function () {
     $response = post('/contact', [
         'name' => fake()->name,
         'contact' => fake()->phoneNumber,
-        'email' => $contact->email
+        'email' => $contact->email,
     ]);
     $response->assertSessionHasErrors(['email']);
 });
@@ -74,7 +74,7 @@ test('create contact', function () {
     $response = post('/contact', [
         'name' => fake()->name,
         'contact' => '123456789',
-        'email' => fake()->email
+        'email' => fake()->email,
     ]);
     $response->assertRedirect('/');
     expect(Contact::count())->toBe(1);
@@ -86,7 +86,7 @@ test('update contact', function () {
     $response = put("/contact/{$contact->id}", [
         'name' => fake()->name,
         'contact' => '123456789',
-        'email' => fake()->email
+        'email' => fake()->email,
     ]);
     $response->assertRedirectToRoute('home');
 });
@@ -98,7 +98,7 @@ test('only update contact if phone is unique', function () {
     $response = put("/contact/{$contact->id}", [
         'name' => fake()->name,
         'contact' => $contact2->contact,
-        'email' => fake()->email
+        'email' => fake()->email,
     ]);
     $response->assertSessionHasErrors(['contact']);
 });
@@ -110,7 +110,7 @@ test('only update contact if email is unique', function () {
     $response = put("/contact/{$contact->id}", [
         'name' => fake()->name,
         'contact' => fake()->phoneNumber,
-        'email' => $contact2->email
+        'email' => $contact2->email,
     ]);
     $response->assertSessionHasErrors(['email']);
 });
@@ -125,7 +125,7 @@ test('delete contact', function () {
 });
 test('contact polices for guest user', function () {
     $contact = Contact::factory()->create();
-    $response = get("/");
+    $response = get('/');
     $response->assertStatus(200);
     $response = get(route('contact.show', $contact));
     $response->assertStatus(403);
@@ -140,7 +140,7 @@ test('contact polices for authenticated user', function () {
     $user = User::factory()->create();
     actingAs($user);
     $contact = Contact::factory()->create();
-    $response = get("/");
+    $response = get('/');
     $response->assertStatus(200);
     $response = get(route('contact.show', $contact));
     $response->assertStatus(200);

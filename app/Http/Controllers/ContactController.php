@@ -9,7 +9,6 @@ use Illuminate\Validation\Rule;
 
 class ContactController extends Controller
 {
-
     protected function rules(Contact $contact): array
     {
         return [
@@ -22,6 +21,7 @@ class ContactController extends Controller
     public function index(): View
     {
         $contacts = Contact::latest('id')->paginate();
+
         return view('contact.index', ['contacts' => $contacts]);
     }
 
@@ -33,8 +33,9 @@ class ContactController extends Controller
     public function store(Request $request)
     {
         $this->authorize('create', Contact::class);
-        $data = $request->validate($this->rules(new Contact()));
+        $data = $request->validate($this->rules(new Contact));
         Contact::create($data);
+
         return redirect()->route('home')->with('status', 'Contact created!');
     }
 
@@ -53,12 +54,14 @@ class ContactController extends Controller
     {
         $data = $request->validate($this->rules($contact));
         $contact->update($data);
+
         return redirect()->route('home')->with('status', 'Contact updated!');
     }
 
     public function destroy(Contact $contact)
     {
         $contact->delete();
+
         return response()->noContent();
     }
 }
